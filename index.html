@@ -203,6 +203,27 @@ footer{background:var(--bg);border-top:1px solid var(--border);padding:3rem 2rem
   .show-item button{display:none}
 }
 
+
+/* CAROUSEL */
+.carousel-section{background:var(--bg);padding:0}
+.carousel-wrap{position:relative;overflow:hidden;width:100%;aspect-ratio:16/7;background:#000}
+.carousel-track{display:flex;height:100%;transition:transform 0.6s cubic-bezier(0.77,0,0.18,1)}
+.carousel-slide{min-width:100%;height:100%;position:relative;flex-shrink:0}
+.carousel-slide img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(0.75)}
+.carousel-slide:hover img{filter:brightness(0.9);transition:filter 0.3s}
+.carousel-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(10,10,10,0.85) 100%)}
+.carousel-caption{position:absolute;bottom:2rem;left:2.5rem;right:2.5rem}
+.carousel-caption p{font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:600;letter-spacing:0.25em;color:var(--off-white)}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(10,10,10,0.6);border:1px solid rgba(200,0,0,0.4);color:var(--white);width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;z-index:10;font-size:1.2rem}
+.carousel-btn:hover{background:var(--red);border-color:var(--red)}
+.carousel-prev{left:1rem}
+.carousel-next{right:1rem}
+.carousel-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
+.carousel-dot{width:8px;height:8px;background:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.2);cursor:pointer;transition:all 0.2s}
+.carousel-dot.active{background:var(--red);border-color:var(--red);width:24px}
+.carousel-counter{position:absolute;top:1.25rem;right:1.5rem;font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;letter-spacing:0.2em;color:rgba(255,255,255,0.4);z-index:10}
+.section-divider{height:4px;background:linear-gradient(90deg,var(--red),transparent)}
+
 /* GLOBAL LOWERCASE */
 body, body *{text-transform:lowercase!important}
 </style>
@@ -216,6 +237,7 @@ body, body *{text-transform:lowercase!important}
       <a href="#" onclick="showPage('home')">home.</a>
       <a href="#" onclick="showSection('shows')">shows.</a>
       <a href="#" onclick="showSection('music')">music.</a>
+      <a href="#" onclick="showSection('photos')">photos.</a>
       <a href="#" onclick="showSection('band')">band.</a>
       <a href="#" onclick="showSection('merch')">merch.</a>
       <a href="#" class="btn-member" onclick="showPage('portal')">Member Portal</a>
@@ -242,6 +264,40 @@ body, body *{text-transform:lowercase!important}
       <div class="scroll-line"></div>
     </div>
   </div>
+
+  <!-- PHOTOS CAROUSEL -->
+  <div class="section-divider"></div>
+  <div class="carousel-section" id="section-photos">
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="carousel-track">
+
+        <div class="carousel-slide">
+          <img src="images/photo-1.jpg" alt="done. live at velvet jones">
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption"><p>live at velvet jones &mdash; santa barbara, ca.</p></div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="images/photo-2.jpg" alt="done. band photo">
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption"><p>done. &mdash; aaron zell &bull; cody herzog &bull; mike palmer</p></div>
+        </div>
+
+        <div class="carousel-slide">
+          <img src="images/photo-3.jpg" alt="done. on stage">
+          <div class="carousel-overlay"></div>
+          <div class="carousel-caption"><p>done. &mdash; live.</p></div>
+        </div>
+
+      </div>
+
+      <button class="carousel-btn carousel-prev" onclick="carouselMove(-1)">&#8592;</button>
+      <button class="carousel-btn carousel-next" onclick="carouselMove(1)">&#8594;</button>
+      <div class="carousel-dots" id="carousel-dots"></div>
+      <div class="carousel-counter" id="carousel-counter">1 / 3</div>
+    </div>
+  </div>
+  <div class="section-divider" style="background:linear-gradient(90deg,transparent,var(--red))"></div>
 
   <div class="section" id="section-news">
     <div class="section-label">Latest</div>
@@ -608,6 +664,58 @@ function saveNote(id){var n=notes.find(function(x){return x.id===id;});if(!n)ret
 function newNote(){document.getElementById('note-display').innerHTML='<div class="note-editor"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:1.5rem;color:var(--white);margin-bottom:1rem">New Note</div><div class="form-group"><label>Title</label><input type="text" id="nn-title" placeholder="Note title..."></div><div class="form-group"><label>Tag</label><select id="nn-tag" class="select-tag"><option value="lyrics">Lyrics</option><option value="idea">Idea</option><option value="general">General</option><option value="setlist">Setlist</option></select></div><div class="form-group"><label>Content</label><textarea id="nn-body" rows="10" placeholder="Write here..."></textarea></div><div style="display:flex;gap:0.5rem"><button class="btn-sm btn-red" onclick="createNote()">Create</button><button class="btn-sm btn-grey" onclick="showNoteDefault()">Cancel</button></div></div>';}
 function createNote(){var t=document.getElementById('nn-title').value.trim();var b=document.getElementById('nn-body').value.trim();if(!t||!b){alert('Please fill in title and content.');return;}var n={id:Date.now(),title:t,tag:document.getElementById('nn-tag').value,author:currentUser,date:'Today',body:b};notes.unshift(n);activeNote=n.id;renderNotes();viewNote(n);}
 function sendChat(){var inp=document.getElementById('chat-input');var msg=inp.value.trim();if(!msg)return;var box=document.getElementById('chat-messages');var div=document.createElement('div');div.className='chat-msg own';var now=new Date();var t='Today '+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();div.innerHTML='<div class="chat-msg-header"><span class="chat-msg-user">'+currentUser+'</span><span class="chat-msg-time">'+t+'</span></div><div class="chat-msg-text">'+msg+'</div>';box.appendChild(div);box.scrollTop=box.scrollHeight;inp.value='';}
+
+// CAROUSEL
+var carouselIndex=0;
+var carouselTotal=3;
+var carouselAuto;
+function carouselMove(dir){
+  carouselIndex=(carouselIndex+dir+carouselTotal)%carouselTotal;
+  carouselUpdate();
+  resetCarouselAuto();
+}
+function carouselGoTo(i){
+  carouselIndex=i;
+  carouselUpdate();
+  resetCarouselAuto();
+}
+function carouselUpdate(){
+  document.getElementById('carousel-track').style.transform='translateX(-'+carouselIndex*100+'%)';
+  document.getElementById('carousel-counter').textContent=(carouselIndex+1)+' / '+carouselTotal;
+  var dots=document.querySelectorAll('.carousel-dot');
+  dots.forEach(function(d,i){d.classList.toggle('active',i===carouselIndex);});
+}
+function resetCarouselAuto(){
+  clearInterval(carouselAuto);
+  carouselAuto=setInterval(function(){carouselMove(1);},5000);
+}
+function initCarousel(){
+  var dotsEl=document.getElementById('carousel-dots');
+  if(!dotsEl)return;
+  dotsEl.innerHTML='';
+  for(var i=0;i<carouselTotal;i++){
+    var d=document.createElement('div');
+    d.className='carousel-dot'+(i===0?' active':'');
+    d.setAttribute('data-i',i);
+    d.onclick=(function(idx){return function(){carouselGoTo(idx);};})(i);
+    dotsEl.appendChild(d);
+  }
+  carouselAuto=setInterval(function(){carouselMove(1);},5000);
+}
+document.addEventListener('DOMContentLoaded',initCarousel);
+
+// swipe support
+(function(){
+  var el=document.getElementById('carousel-track');
+  if(!el)return;
+  var startX=0;
+  el.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;},{passive:true});
+  el.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-startX;
+    if(Math.abs(dx)>40)carouselMove(dx<0?1:-1);
+  },{passive:true});
+})();
+
 </script>
 </body>
 </html>
